@@ -1,0 +1,78 @@
+/**
+ * This section is for all of the plugins we need to make this work. 
+ * Kotlin, the fat jar builder, and flag it 
+ * as an application so `./gradlew run` will work
+ */
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.9.20'
+    id "com.github.johnrengelman.shadow" version "8.1.1"
+
+}
+def kotlinVersion = "1.9.20"
+
+apply plugin: 'application'
+
+/**
+ * Standard dependency section for gradle. 
+ * Define the kotlin standard library for
+ * Java 8.
+ */
+repositories {
+    mavenCentral()
+}
+
+def jerseyVersion = "2.26"
+
+dependencies {
+    //compile(kotlin("stdlib"))
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.20'
+    //compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.glassfish.jersey.containers:jersey-container-grizzly2-http:${jerseyVersion}"
+    implementation "org.glassfish.jersey.inject:jersey-hk2:${jerseyVersion}"
+    implementation "org.glassfish.jersey.media:jersey-media-json-jackson:${jerseyVersion}"
+
+    // https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-test
+    testImplementation group: 'org.jetbrains.kotlin', name: 'kotlin-test', version: '1.9.20'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.8.1'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.8.1'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.8.1'
+
+
+    // https://mvnrepository.com/artifact/org.jetbrains.spek/spek-api
+    testImplementation group: 'org.jetbrains.spek', name: 'spek-api', version: '1.1.5'
+}
+
+/**
+ * Personal preference. I hate having src/main/kotlin
+ * be the root, so I change it that 'src'
+ * as the root of my source directory.
+ */
+sourceSets {
+    main.kotlin.srcDirs += 'src/main/kotlin'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// Define the main startup class and jar name
+application {
+    mainClass = 'ServerKt'
+}
+shadow {
+    mainClassName = application.mainClass.get()
+}
+//archivesBaseName = 'step-by-step-kotlin-hello-world-main.kotlin.jaxrs'
+
+// tell the jar which class to startup in.
+//jar {
+//    manifest {
+//        attributes 'Main-Class': 'ServerKt'
+//    }
+//}
+
+// Properties for `./gradlew run`
+run {
+    standardInput = System.in
+    environment = ["SHUTDOWN_TYPE" : "INPUT"]
+}

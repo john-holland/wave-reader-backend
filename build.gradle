@@ -10,7 +10,13 @@ plugins {
 }
 def kotlinVersion = "1.9.20"
 
+
 apply plugin: 'application'
+
+def credits = [
+    "Erik Lindbom erik@baens.net": "https://blog.baens.net/posts/step-by-step-kotlin-jaxrs-hello-world/"
+]
+project.getLogger().lifecycle("credits: ", credits)
 
 /**
  * Standard dependency section for gradle. 
@@ -25,7 +31,7 @@ def jerseyVersion = "2.26"
 
 dependencies {
     //compile(kotlin("stdlib"))
-    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.9.20'
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.4.10'//'1.9.20'
     //compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.glassfish.jersey.containers:jersey-container-grizzly2-http:${jerseyVersion}"
     implementation "org.glassfish.jersey.inject:jersey-hk2:${jerseyVersion}"
@@ -65,11 +71,11 @@ shadow {
 //archivesBaseName = 'step-by-step-kotlin-hello-world-main.kotlin.jaxrs'
 
 // tell the jar which class to startup in.
-//jar {
-//    manifest {
-//        attributes 'Main-Class': 'ServerKt'
-//    }
-//}
+jar {
+    manifest {
+        attributes 'Main-Class': 'ServerKt'
+    }
+}
 
 // Properties for `./gradlew run`
 run {

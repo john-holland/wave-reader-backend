@@ -4,8 +4,8 @@ import main.kotlin.jaxrs.Application
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory
 import javax.ws.rs.core.UriBuilder
 
-public fun main(args: Array<String>) {
-    //println(args.joinToString { ", " })
+fun main(args: Array<String>) {
+    println(args.joinToString { ", " })
     val url = UriBuilder.fromUri("http://0.0.0.0/")
             .port(8080)
             .build()

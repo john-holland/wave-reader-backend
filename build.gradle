@@ -8,15 +8,14 @@ plugins {
     id "com.github.johnrengelman.shadow" version "8.1.1"
 
 }
-def kotlinVersion = "1.9.20"
 
 
 apply plugin: 'application'
 
-def credits = [
-    "Erik Lindbom erik@baens.net": "https://blog.baens.net/posts/step-by-step-kotlin-jaxrs-hello-world/"
-]
-project.getLogger().lifecycle("credits: ", credits)
+//def credits = [
+//    "Erik Lindbom erik@baens.net": "https://blog.baens.net/posts/step-by-step-kotlin-jaxrs-hello-world/"
+//]
+//project.getLogger().lifecycle("credits: ", credits)
 
 /**
  * Standard dependency section for gradle. 
@@ -27,17 +26,34 @@ repositories {
     mavenCentral()
 }
 
+def kotlinVersion = "1.9.20"//1.9.20' // '1.4.10' //
+def spekVersion = "2.0.6"
 def jerseyVersion = "2.26"
 
 dependencies {
     //compile(kotlin("stdlib"))
-    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.4.10'//'1.9.20'
+    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlinVersion
+//    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-common', version: '1.9.20'
+//    implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: '1.9.20'
+
     //compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.glassfish.jersey.containers:jersey-container-grizzly2-http:${jerseyVersion}"
     implementation "org.glassfish.jersey.inject:jersey-hk2:${jerseyVersion}"
     implementation "org.glassfish.jersey.media:jersey-media-json-jackson:${jerseyVersion}"
 
+    // some version of Kotlin
+//    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
+//
+//    // https://mvnrepository.com/artifact/org.spekframework.spek2/spek-dsl-jvm
+//    implementation group: 'org.spekframework.spek2', name: 'spek-dsl-jvm', version: spekVersion
+//
+//    testRuntimeOnly "org.spekframework.spek2:spek-runner-junit5:$spekVersion"
+
+    // spek requires kotlin-reflect, can be omitted if already in the classpath
+    testRuntimeOnly "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+
     // https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-test
+    //      testCompile 'io.kotlintest:kotlintest-runner-junit5:3.1.9'
     testImplementation group: 'org.jetbrains.kotlin', name: 'kotlin-test', version: '1.9.20'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.8.1'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.8.1'
@@ -45,7 +61,9 @@ dependencies {
 
 
     // https://mvnrepository.com/artifact/org.jetbrains.spek/spek-api
-    testImplementation group: 'org.jetbrains.spek', name: 'spek-api', version: '1.1.5'
+    //testImplementation group: 'org.jetbrains.spek', name: 'spek-api', version: '1.1.5'
+    //testImplementation group: 'org.jetbrains.spek', name: 'spek-junit-platform-engine', version: '1.1.5'
+
 }
 
 /**
@@ -54,16 +72,33 @@ dependencies {
  * as the root of my source directory.
  */
 sourceSets {
-    main.kotlin.srcDirs += 'src/main/kotlin'
+    main {
+        java {
+            srcDirs += "src/main/java"
+        }
+        kotlin{
+            srcDirs += 'src/main/kotlin'
+        }
+    }
+    test {
+        java {
+            srcDirs += "src/test/java"
+        }
+        kotlin{
+            srcDirs += 'src/test/kotlin'
+        }
+    }
 }
 
 test {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        includeEngines 'spek2'
+    }
 }
 
 // Define the main startup class and jar name
 application {
-    mainClass = 'ServerKt'
+    mainClass = 'main/kotlin/ServerKt'
 }
 shadow {
     mainClassName = application.mainClass.get()
@@ -73,7 +108,7 @@ shadow {
 // tell the jar which class to startup in.
 jar {
     manifest {
-        attributes 'Main-Class': 'ServerKt'
+        attributes 'Main-Class': 'main/kotlin/ServerKt'
     }
 }
 

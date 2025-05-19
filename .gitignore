@@ -2,3 +2,5 @@
 build
 .idea
 *iml
+node_modules/
+memoize3.d.ts

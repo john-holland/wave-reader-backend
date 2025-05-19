@@ -1,16 +1,16 @@
-ARG VERSION=8u151
+ARG JAVA_VERSION=17
 
-FROM openjdk:${VERSION}-jdk as BUILD
+FROM gradle:8.5-jdk${JAVA_VERSION} as BUILD
 
-COPY . /src
-WORKDIR /src
-RUN ./gradlew --no-daemon shadowJar
+WORKDIR /app
+COPY . .
+RUN gradle --no-daemon shadowJar
 
-FROM openjdk:${VERSION}-jre
+FROM eclipse-temurin:${JAVA_VERSION}-jre
 
-COPY --from=BUILD /src/build/libs/step-by-step-kotlin-hello-world-main.kotlin.jaxrs-all.jar /bin/runner/run.jar
-WORKDIR /bin/runner
+WORKDIR /app
+COPY --from=BUILD /app/build/libs/*-all.jar app.jar
 
 EXPOSE 8080
 
-CMD ["java","-jar","run.jar"]
+CMD ["java", "-jar", "app.jar"]

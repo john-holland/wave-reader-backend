@@ -1,0 +1,161 @@
+type StateMachineError {
+    code: String!
+    message: String!
+    version: String!
+    cause: String
+    subMachineId: String
+    featureFlags: [FeatureFlag!]!
+}
+
+type FeatureFlag {
+    name: String!
+    enabled: Boolean!
+    variation: String
+}
+
+type StateMachine {
+    id: ID!
+    currentState: String!
+    context: String!
+    version: String!
+    availableTransitions: [String!]!
+    subMachines: [StateMachine!]
+    teleportTemplate: String
+    featureFlags: [FeatureFlag!]!
+}
+
+type Image {
+    id: String!
+    title: String
+    description: String
+    link: String!
+    deleteHash: String
+    width: Int!
+    height: Int!
+    size: Int!
+    type: String!
+    animated: Boolean!
+}
+
+type Template {
+    id: String!
+    name: String!
+    content: String!
+    provider: String!
+    metadata: JSON
+}
+
+type ComponentConfig {
+    id: ID!
+    type: String!
+    properties: JSON!
+    version: String!
+    metadata: JSON
+}
+
+input TemplateInput {
+    name: String!
+    content: String!
+    provider: String!
+    metadata: JSON
+}
+
+input ImageUploadInput {
+    title: String
+    description: String
+}
+
+input ComponentConfigInput {
+    type: String!
+    properties: JSON!
+    metadata: JSON
+}
+
+type MLPrediction {
+    confidence: Float!
+    suggestedSettings: JSON!
+    factors: [String!]!
+}
+
+type DonationRecord {
+    id: ID!
+    amount: Float!
+    currency: String!
+    paymentMethod: String!
+    status: String!
+    timestamp: Float!
+    metadata: JSON
+}
+
+type DonationStats {
+    totalDonations: Int!
+    totalAmount: Float!
+    averageAmount: Float!
+    paymentMethodDistribution: JSON!
+    currencyDistribution: JSON!
+}
+
+input PaymentRequestInput {
+    amount: Float!
+    currency: String!
+    paymentMethod: String!
+    metadata: JSON
+}
+
+type Query {
+    stateMachine(id: ID!): StateMachine
+    stateMachines: [StateMachine!]!
+    teleportTemplate(templateId: String!): String
+    featureFlags(machineId: ID!): [FeatureFlag!]!
+    getTemplate(id: String!): Template
+    getTemplates(provider: String): [Template!]!
+    getImage(id: String!): Image
+    getComponentConfig(id: ID!): ComponentConfig
+    getComponentConfigsByType(type: String!): [ComponentConfig!]!
+    predictDefaultSettings(type: String!, context: JSON!): MLPrediction!
+    getDonationHistory(
+        startTime: Float
+        endTime: Float
+        paymentMethod: String
+    ): [DonationRecord!]!
+    getDonationStats: DonationStats!
+}
+
+type Mutation {
+    transitionStateMachine(id: ID!, event: String!): StateMachine!
+    setTeleportTemplate(templateId: String!, template: String!): Boolean!
+    setFeatureFlag(name: String!, enabled: Boolean!, variation: String): Boolean!
+    uploadImage(file: Upload!, input: ImageUploadInput): Image!
+    deleteImage(deleteHash: String!): Boolean!
+    createTemplate(input: TemplateInput!): Template!
+    updateTemplate(id: String!, input: TemplateInput!): Template!
+    deleteTemplate(id: String!): Boolean!
+    createComponentConfig(input: ComponentConfigInput!): ComponentConfig!
+    updateComponentConfig(id: ID!, input: ComponentConfigInput!): ComponentConfig!
+    deleteComponentConfig(id: ID!): Boolean!
+    processPayment(input: PaymentRequestInput!): PaymentResponse!
+    recordDonation(paymentId: ID!): DonationRecord!
+}
+
+type Subscription {
+    stateMachineUpdated(id: ID!): StateMachine!
+    stateMachineError(id: ID!): StateMachineError!
+    featureFlagUpdated(machineId: ID!): [FeatureFlag!]!
+    templateUpdated(id: String!): Template!
+    imageUploaded: Image!
+    componentConfigUpdated(id: ID!): ComponentConfig!
+    donationProcessed: DonationRecord!
+}
+
+scalar Upload
+scalar JSON
+
+type PaymentResponse {
+    id: ID!
+    status: String!
+    amount: Float!
+    currency: String!
+    paymentMethod: String!
+    metadata: JSON
+    error: String
+} 

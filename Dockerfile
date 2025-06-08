@@ -1,16 +1,9 @@
-ARG JAVA_VERSION=17
-
-FROM gradle:8.5-jdk${JAVA_VERSION} as BUILD
+FROM gradle:8.5-jdk17
 
 WORKDIR /app
+
 COPY . .
-RUN gradle --no-daemon shadowJar
 
-FROM eclipse-temurin:${JAVA_VERSION}-jre
+EXPOSE 3000
 
-WORKDIR /app
-COPY --from=BUILD /app/build/libs/*-all.jar app.jar
-
-EXPOSE 8080
-
-CMD ["java", "-jar", "app.jar"]
+CMD ["gradle", "run", "--continuous"]

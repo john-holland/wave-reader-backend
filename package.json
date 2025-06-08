@@ -1,6 +1,11 @@
 {
+  "name": "wave-reader-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/start.js"
+  },
   "dependencies": {
-    "@apollo/client": "^3.13.8",
-    "graphql": "^16.11.0"
+    "node-fetch": "^3.3.2"
   }
-}
+} 

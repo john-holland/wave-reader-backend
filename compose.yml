@@ -1,0 +1,27 @@
+services:
+  backend:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - gradle-cache:/home/gradle/.gradle
+    environment:
+      - GRADLE_OPTS=-Dorg.gradle.daemon=false
+    depends_on:
+      - port-broker
+
+  port-broker:
+    image: node:20-slim
+    working_dir: /app
+    ports:
+      - "8765:8765"
+    volumes:
+      - ../cursor-docker-port-broker:/app
+    command: >
+      sh -c "npm install && npm start"
+    environment:
+      - PORT=8765
+
+volumes:
+  gradle-cache: 

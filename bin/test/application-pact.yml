@@ -1,0 +1,13 @@
+pact:
+  broker:
+    url: ${PACT_BROKER_URL:http://localhost:9292}
+    authentication:
+      username: ${PACT_BROKER_USERNAME:}
+      password: ${PACT_BROKER_PASSWORD:}
+  consumer:
+    name: wave-reader-state-machine
+  provider:
+    name: log-view-service
+  publish:
+    enabled: ${PACT_PUBLISH_RESULTS:false}
+    version: ${PACT_VERSION:1.0.0} 
